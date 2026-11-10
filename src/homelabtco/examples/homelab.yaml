@@ -1,0 +1,58 @@
+# An example scenario: a four-bay home server in a small rack, against three ways of renting the same thing.
+# Every number is an ASSUMPTION to replace with your own: hardware prices, watts and cloud prices are round figures
+# of the right order of magnitude, not quotes. Check the providers' price pages before relying on a result.
+name: Home server, four-bay build
+start: 2026-01
+horizon_months: 60
+
+electricity:
+  # All-in price per kWh by hour of day (hour 0 to 23): dearer in the working day, cheaper at night and on weekends
+  # would need a weekday split; this is the simple 24-hour version.
+  eur_per_kwh: [0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33,
+                0.33, 0.33, 0.33, 0.28, 0.28, 0.28, 0.28, 0.28]
+  yearly_increase: 0.02
+  overhead_factor: 1.1   # power-supply losses and a little cooling, on top of what the parts draw
+
+load:
+  # Share of each hour spent at "load" power (the rest is idle): quiet at night, busier from the morning.
+  utilisation: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10, 0.20, 0.30, 0.30, 0.30, 0.30, 0.30, 0.30, 0.30, 0.30,
+                0.30, 0.30, 0.35, 0.40, 0.40, 0.35, 0.20, 0.10]
+
+hardware:
+  - {name: "Server (CPU, board, RAM, PSU, case)", price_eur: 900, life_months: 72, idle_w: 35, load_w: 120, annual_failure_rate: 0.02}
+  - {name: HDD 12 TB, count: 4, price_eur: 250, life_months: 60, idle_w: 5, load_w: 8, annual_failure_rate: 0.015}
+  - {name: NVMe SSD 2 TB, price_eur: 120, life_months: 60, idle_w: 1, load_w: 5, annual_failure_rate: 0.01}
+  - {name: Rack switch 16 ports, price_eur: 150, life_months: 96, idle_w: 12, load_w: 15, annual_failure_rate: 0.01}
+  - {name: Rack PDU and rack, price_eur: 60, life_months: 120, idle_w: 2, load_w: 2}
+
+recurring:
+  - {name: Domain and static address, eur_per_month: 2}
+  - {name: Off-site backup of the critical 2 TB, eur_per_month: 5}
+
+admin:
+  hours_per_month: 3
+  hourly_value_eur: 0     # set a value to count your own time as a cost
+
+cloud:
+  yearly_increase: 0.0
+  scenarios:
+    - name: Cheap object storage + small VPS
+      items:
+        - {type: storage, name: Object storage, tb: 19, tb_growth_per_year: 2, eur_per_tb_month: 6}
+        - {type: egress, name: Downloads, tb_per_month: 0.5, eur_per_tb: 10}
+        - {type: fixed, name: VPS 4 vCPU 8 GB, eur_per_month: 15}
+    - name: Flat-rate storage box + small VPS
+      items:
+        - {type: fixed, name: Storage box 20 TB, eur_per_month: 30}
+        - {type: fixed, name: VPS 4 vCPU 8 GB, eur_per_month: 15}
+    - name: Large-provider storage + managed database
+      items:
+        - {type: storage, name: Standard object storage, tb: 19, tb_growth_per_year: 2, eur_per_tb_month: 21}
+        - {type: egress, name: Internet egress, tb_per_month: 1, eur_per_tb: 85}
+        - {type: fixed, name: VM and managed database, eur_per_month: 60}
+
+# How far each group of numbers may be off, for the Monte Carlo run (0.3 = 30% either way). Defaults apply to groups
+# left out.
+uncertainty:
+  energy_price: 0.30
+  cloud_price: 0.25

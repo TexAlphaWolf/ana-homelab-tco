@@ -1,0 +1,65 @@
+{
+ "kind": "bench",
+ "environment": {
+  "homelabtco": "1.0.0",
+  "python": "3.14.10",
+  "numpy": "2.5.4",
+  "system": "Linux x86_64",
+  "cpus": 12,
+  "scenario": "bundled example",
+  "horizon_months": 60,
+  "cloud_scenarios": 3,
+  "seed": 1,
+  "repeat": 5,
+  "command": "bench --sizes 1000,10000,100000,1000000 --repeat 5 --draws 50 --out /out",
+  "seconds": 38.5
+ },
+ "reference_s": 0.01046710600348888,
+ "single_s": 0.0003126839947071858,
+ "montecarlo": [
+  {
+   "samples": 1000,
+   "seconds": 0.006847650998679455
+  },
+  {
+   "samples": 10000,
+   "seconds": 0.06434853899554582
+  },
+  {
+   "samples": 100000,
+   "seconds": 0.6516273140005069
+  },
+  {
+   "samples": 1000000,
+   "seconds": 5.862863310001558
+  }
+ ],
+ "horizon": [
+  {
+   "months": 60,
+   "samples": 10000,
+   "seconds": 0.05824990499968408
+  },
+  {
+   "months": 120,
+   "samples": 10000,
+   "seconds": 0.13018728300085058
+  },
+  {
+   "months": 240,
+   "samples": 10000,
+   "seconds": 0.23446005699952366
+  },
+  {
+   "months": 480,
+   "samples": 10000,
+   "seconds": 0.5867488139992929
+  }
+ ],
+ "verification": {
+  "checks": 51,
+  "ok": true,
+  "max_rel_error": 1.4557694438866506e-14,
+  "tolerance": 1e-09
+ }
+}
